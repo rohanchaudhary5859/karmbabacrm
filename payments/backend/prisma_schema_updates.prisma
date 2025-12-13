@@ -1,0 +1,35 @@
+// Add these models to your existing prisma/schema.prisma and run `npx prisma migrate dev`
+model SubscriptionPlan {
+  id       String @id @default(uuid())
+  code     String @unique
+  name     String
+  priceMonthly Float
+  currency String @default("INR")
+  stripePriceId String?
+  razorpayPlanId String?
+  createdAt DateTime @default(now())
+}
+
+model UserSubscription {
+  id String @id @default(uuid())
+  supplierId String @unique
+  tier String
+  active Boolean @default(false)
+  startedAt DateTime?
+  expiresAt DateTime?
+  stripeSubscriptionId String?
+  razorpaySubscriptionId String?
+  createdAt DateTime @default(now())
+}
+
+model PaymentTransaction {
+  id String @id @default(uuid())
+  supplierId String?
+  provider String
+  providerPaymentId String
+  amount Float
+  currency String
+  status String
+  metadata Json?
+  createdAt DateTime @default(now())
+}

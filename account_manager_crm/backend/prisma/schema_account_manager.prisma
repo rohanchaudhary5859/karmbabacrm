@@ -1,0 +1,52 @@
+
+// Add these models to your Prisma schema.prisma and run `npx prisma migrate dev`
+model AccountManager {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  phone     String?
+  zone      String?
+  createdAt DateTime @default(now())
+  assignments SupplierAssignment[]
+}
+
+model SupplierAssignment {
+  id         String   @id @default(uuid())
+  supplierId String
+  managerId  String
+  assignedAt DateTime @default(now())
+  manager    AccountManager @relation(fields: [managerId], references: [id])
+}
+
+model LeadQualification {
+  id         String   @id @default(uuid())
+  leadId     String
+  questions  Json?
+  status     String   // PENDING / QUALIFIED / REJECTED
+  qualifiedBy String?
+  score      Float?
+  createdAt  DateTime @default(now())
+}
+
+model FollowUp {
+  id            String   @id @default(uuid())
+  supplierId    String
+  managerId     String
+  message       String
+  nextActionAt  DateTime?
+  status        String   // OPEN / DONE / SKIPPED
+  createdAt     DateTime @default(now())
+}
+
+model PerformanceReport {
+  id           String   @id @default(uuid())
+  supplierId   String
+  responseTime Float?
+  leadQuality  Float?
+  rating       Float?
+  pricingScore Float?
+  totalScore   Float?
+  periodStart  DateTime
+  periodEnd    DateTime
+  createdAt    DateTime @default(now())
+}

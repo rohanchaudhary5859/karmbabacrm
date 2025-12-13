@@ -1,0 +1,23 @@
+// Add the following models to your prisma/schema.prisma and run `npx prisma migrate dev`
+model SupplierMetrics {
+  id          String   @id @default(uuid())
+  supplierId  String   @unique
+  dailyLeads  Int      @default(0)
+  monthlyLeads Int     @default(0)
+  responseTimeAvg Float @default(0.0)
+  productViews Int     @default(0)
+  positiveFeedback Int @default(0)
+  negativeFeedback Int @default(0)
+  lastUpdated DateTime @updatedAt
+  createdAt   DateTime @default(now())
+}
+
+model BoostCampaign {
+  id String @id @default(uuid())
+  supplierId String
+  startDate DateTime
+  endDate DateTime
+  budget Float
+  status String // PENDING / ACTIVE / COMPLETED
+  createdAt DateTime @default(now())
+}

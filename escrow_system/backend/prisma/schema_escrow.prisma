@@ -1,0 +1,20 @@
+
+model Escrow {
+  id          String   @id @default(uuid())
+  buyerId     String
+  sellerId    String
+  amount      Float
+  currency    String
+  milestone   String   // CREATED / FUNDED / RELEASED / DISPUTED / REFUNDED
+  shipmentId  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model EscrowLog {
+  id        String   @id @default(uuid())
+  escrowId  String
+  action    String
+  note      String?
+  createdAt DateTime @default(now())
+}

@@ -1,0 +1,25 @@
+
+// Add these models into your main schema.prisma
+
+model Executive {
+  id         String   @id @default(uuid())
+  fullName   String?
+  title      String?
+  company    String?
+  location   String?
+  linkedinUrl String?
+  email      String?
+  phone      String?
+  source     String   @default("LinkedIn")
+  createdAt  DateTime @default(now())
+  outreach   ExecutiveOutreachLog[]
+}
+
+model ExecutiveOutreachLog {
+  id          String   @id @default(uuid())
+  executiveId String
+  message     String
+  status      String   // SENT / FAILED / CONNECTED
+  createdAt   DateTime @default(now())
+  Executive   Executive @relation(fields: [executiveId], references: [id])
+}
