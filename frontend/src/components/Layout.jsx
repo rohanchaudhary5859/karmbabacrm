@@ -33,6 +33,8 @@ export default function Layout({ children }){
           <NavLink to="/clients">Clients</NavLink>
           <NavLink to="/interactions">Interactions</NavLink>
           <NavLink to="/tasks">Tasks</NavLink>
+          <NavLink to="/segments">Segments</NavLink>
+          <NavLink to="/reports">Reports</NavLink>
         </nav>
       </aside>
       
