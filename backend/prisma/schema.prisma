@@ -16,12 +16,12 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  clients        Client[]
-  interactions   Interaction[]
-  tasks          Task[]
-  segments       ClientSegment[]
-  notifications  Notification[]
-  calendarTokens CalendarToken[]
+  clients      Client[]
+  interactions Interaction[]
+  tasks        Task[]
+  segments     ClientSegment[]
+  templates    EmailTemplate[]
+  documents    Document[]
 }
 
 model Client {
@@ -40,6 +40,7 @@ model Client {
   interactions Interaction[]
   tasks        Task[]
   segments     ClientSegment[]
+  documents    Document[]
 }
 
 model Interaction {
@@ -82,12 +83,11 @@ model ClientSegment {
   clients Client[]
 }
 
-model Notification {
+model EmailTemplate {
   id        String   @id @default(uuid())
-  title     String
-  message   String
-  type      String   @default("INFO") // INFO, WARNING, ERROR, SUCCESS
-  isRead    Boolean  @default(false)
+  name      String
+  subject   String
+  body      String
   userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -95,13 +95,19 @@ model Notification {
   user User @relation(fields: [userId], references: [id])
 }
 
-model CalendarToken {
-  id        String   @id @default(uuid())
-  accessToken String
-  refreshToken String?
-  userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Document {
+  id           String   @id @default(uuid())
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int
+  path         String
+  description  String?
+  userId       String
+  clientId     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+  client Client? @relation(fields: [clientId], references: [id])
 }

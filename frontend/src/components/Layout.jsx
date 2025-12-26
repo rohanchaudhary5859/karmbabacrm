@@ -1,8 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useNotifications } from '../context/NotificationContext';
-import NotificationBell from './NotificationBell';
 
 function NavLink({ to, children, exact = false }) {
   return (
@@ -19,7 +17,6 @@ function NavLink({ to, children, exact = false }) {
 
 export default function Layout({ children }){
   const { user, logout } = useAuth();
-  const { unreadCount } = useNotifications();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -37,6 +34,7 @@ export default function Layout({ children }){
           <NavLink to="/interactions">Interactions</NavLink>
           <NavLink to="/tasks">Tasks</NavLink>
           <NavLink to="/segments">Segments</NavLink>
+          <NavLink to="/templates">Templates</NavLink>
           <NavLink to="/reports">Reports</NavLink>
         </nav>
       </aside>
@@ -53,8 +51,6 @@ export default function Layout({ children }){
               placeholder="Search..." 
               className="hidden sm:block border p-2 rounded" 
             />
-            
-            <NotificationBell />
             
             <div className="relative group">
               <div className="px-3 py-2 bg-gray-100 rounded cursor-pointer">

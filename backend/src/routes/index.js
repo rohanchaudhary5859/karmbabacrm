@@ -8,7 +8,9 @@ import interactionRoutes from './interaction.js';
 import taskRoutes from './task.js';
 import clientSegmentRoutes from './clientSegment.js';
 import reportRoutes from './report.js';
-import notificationRoutes from './notification.js';
+import emailRoutes from './email.js';
+import documentRoutes from './document.js';
+import searchRoutes from './search.js';
 
 // Register routes
 router.use('/auth', authRoutes);
@@ -17,7 +19,9 @@ router.use('/interactions', interactionRoutes);
 router.use('/tasks', taskRoutes);
 router.use('/segments', clientSegmentRoutes);
 router.use('/reports', reportRoutes);
-router.use('/notifications', notificationRoutes);
+router.use('/email', emailRoutes);
+router.use('/documents', documentRoutes);
+router.use('/search', searchRoutes);
 
 router.get("/test", (req, res) => {
   res.json({ message: "API Route Working ✔" });
