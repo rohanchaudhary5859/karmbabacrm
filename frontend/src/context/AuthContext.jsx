@@ -49,10 +49,7 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
       return { success: true };
     } catch (err) {
-      return { 
-        success: false, 
-        message: err.response?.data?.message || 'Login failed' 
-      };
+      return { success: false, message: err.response?.data?.message || 'Login failed' };
     }
   };
 
@@ -69,22 +66,9 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('token', res.data.token);
       setUser(res.data.user);
       setIsAuthenticated(true);
-      
-      // Send welcome email
-      try {
-        await axios.post('/api/auth/send-welcome', {}, {
-          headers: { Authorization: `Bearer ${res.data.token}` }
-        });
-      } catch (emailErr) {
-        console.error('Failed to send welcome email:', emailErr);
-      }
-      
       return { success: true };
     } catch (err) {
-      return { 
-        success: false, 
-        message: err.response?.data?.message || 'Registration failed' 
-      };
+      return { success: false, message: err.response?.data?.message || 'Registration failed' };
     }
   };
 

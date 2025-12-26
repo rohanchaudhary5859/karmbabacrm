@@ -59,8 +59,8 @@ export default function Login() {
             />
           </div>
           
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="w-full bg-blue-600 text-white py-2 rounded disabled:opacity-50"
             disabled={loading}
           >

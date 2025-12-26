@@ -1,7 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
 const prisma = new PrismaClient();
 
 class User {
@@ -40,10 +39,9 @@ class User {
     
     // Remove password from response
     const { password: _, ...userWithoutPassword } = user;
-    
     return { user: userWithoutPassword, token };
   }
-  
+
   static async login(email, password) {
     // Find user
     const user = await prisma.user.findUnique({
@@ -56,7 +54,6 @@ class User {
     
     // Check password
     const isMatch = await bcrypt.compare(password, user.password);
-    
     if (!isMatch) {
       throw new Error('Invalid credentials');
     }
@@ -70,10 +67,9 @@ class User {
     
     // Remove password from response
     const { password: _, ...userWithoutPassword } = user;
-    
     return { user: userWithoutPassword, token };
   }
-  
+
   static async findById(id) {
     return await prisma.user.findUnique({
       where: { id }

@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:./dev.db"
 }
 
 model User {
@@ -16,12 +16,14 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Relations
   clients      Client[]
   interactions Interaction[]
   tasks        Task[]
   segments     ClientSegment[]
   templates    EmailTemplate[]
   documents    Document[]
+  notifications Notification[]
 }
 
 model Client {
@@ -36,10 +38,10 @@ model Client {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user        User         @relation(fields: [userId], references: [id])
+  // Relations
+  user         User      @relation(fields: [userId], references: [id])
   interactions Interaction[]
   tasks        Task[]
-  segments     ClientSegment[]
   documents    Document[]
 }
 
@@ -48,37 +50,42 @@ model Interaction {
   type      String
   notes     String?
   userId    String
-  clientId  String
+  clientId  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Relations
   user   User   @relation(fields: [userId], references: [id])
-  client Client @relation(fields: [clientId], references: [id])
+  client Client? @relation(fields: [clientId], references: [id])
 }
 
 model Task {
-  id          String   @id @default(uuid())
-  title       String
-  description String?
-  status      String   @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED
-  dueDate     DateTime?
-  userId      String
-  clientId    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String   @id @default(uuid())
+  title          String
+  description    String?
+  status         String   @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED
+  dueDate        DateTime?
+  reminderSent   Boolean  @default(false)
+  overdueNotified Boolean @default(false)
+  userId         String
+  clientId       String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
+  // Relations
   user   User   @relation(fields: [userId], references: [id])
   client Client? @relation(fields: [clientId], references: [id])
 }
 
 model ClientSegment {
-  id          String   @id @default(uuid())
-  name        String
+  id        String   @id @default(uuid())
+  name      String
   description String?
-  userId      String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  // Relations
   user    User     @relation(fields: [userId], references: [id])
   clients Client[]
 }
@@ -92,22 +99,38 @@ model EmailTemplate {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Relations
   user User @relation(fields: [userId], references: [id])
 }
 
 model Document {
-  id           String   @id @default(uuid())
-  filename     String
+  id          String   @id @default(uuid())
+  filename    String
   originalName String
-  mimeType     String
-  size         Int
-  path         String
-  description  String?
-  userId       String
-  clientId     String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  mimeType    String
+  size        Int
+  path        String
+  description String?
+  userId      String
+  clientId    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
+  // Relations
   user   User   @relation(fields: [userId], references: [id])
   client Client? @relation(fields: [clientId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  title     String
+  message   String
+  type      String   @default("INFO") // INFO, WARNING, ERROR, SUCCESS
+  isRead    Boolean  @default(false)
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
 }

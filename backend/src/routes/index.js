@@ -27,4 +27,8 @@ router.get("/test", (req, res) => {
   res.json({ message: "API Route Working ✔" });
 });
 
+router.get("/health", (req, res) => {
+  res.json({ status: "OK", timestamp: new Date().toISOString() });
+});
+
 export default router;
