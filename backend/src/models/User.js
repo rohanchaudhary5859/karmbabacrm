@@ -7,13 +7,23 @@ class User {
   static async register(userData) {
     const { name, email, password, role } = userData;
     
+    // Validate input
+    if (!name || !email || !password) {
+      throw new Error('Name, email, and password are required');
+    }
+    
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email }
     });
     
     if (existingUser) {
-      throw new Error('User already exists');
+      throw new Error('User already exists with this email');
+    }
+    
+    // Validate password strength
+    if (password.length < 6) {
+      throw new Error('Password must be at least 6 characters');
     }
     
     // Hash password
@@ -32,7 +42,10 @@ class User {
     
     // Generate token
     const token = jwt.sign(
-      { id: user.id, role: user.role },
+      { 
+        id: user.id, 
+        role: user.role 
+      },
       process.env.JWT_SECRET || 'fallback_secret',
       { expiresIn: '7d' }
     );
@@ -43,6 +56,11 @@ class User {
   }
 
   static async login(email, password) {
+    // Validate input
+    if (!email || !password) {
+      throw new Error('Email and password are required');
+    }
+    
     // Find user
     const user = await prisma.user.findUnique({
       where: { email }
@@ -60,7 +78,10 @@ class User {
     
     // Generate token
     const token = jwt.sign(
-      { id: user.id, role: user.role },
+      { 
+        id: user.id, 
+        role: user.role 
+      },
       process.env.JWT_SECRET || 'fallback_secret',
       { expiresIn: '7d' }
     );

@@ -30,9 +30,11 @@ export const AuthProvider = ({ children }) => {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
+      
       setUser(res.data.user);
       setIsAuthenticated(true);
     } catch (err) {
+      console.error('Load user error:', err);
       localStorage.removeItem('token');
       setUser(null);
       setIsAuthenticated(false);
@@ -49,7 +51,13 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
       return { success: true };
     } catch (err) {
-      return { success: false, message: err.response?.data?.message || 'Login failed' };
+      localStorage.removeItem('token');
+      setUser(null);
+      setIsAuthenticated(false);
+      return { 
+        success: false, 
+        message: err.response?.data?.message || 'Login failed' 
+      };
     }
   };
 
@@ -68,7 +76,13 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
       return { success: true };
     } catch (err) {
-      return { success: false, message: err.response?.data?.message || 'Registration failed' };
+      localStorage.removeItem('token');
+      setUser(null);
+      setIsAuthenticated(false);
+      return { 
+        success: false, 
+        message: err.response?.data?.message || 'Registration failed' 
+      };
     }
   };
 

@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -21,60 +21,60 @@ model User {
   interactions Interaction[]
   tasks        Task[]
   segments     ClientSegment[]
-  templates    EmailTemplate[]
   documents    Document[]
-  notifications Notification[]
+  templates    EmailTemplate[]
 }
 
 model Client {
-  id        String   @id @default(uuid())
-  name      String
-  email     String?
-  phone     String?
-  company   String?
-  address   String?
-  website   String?
-  userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(uuid())
+  name        String
+  email       String?
+  phone       String?
+  company     String?
+  address     String?
+  website     String?
+  userId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relations
-  user         User      @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
   interactions Interaction[]
-  tasks        Task[]
-  documents    Document[]
+  tasks       Task[]
+  segments    ClientSegment[]
+  documents   Document[]
 }
 
 model Interaction {
   id        String   @id @default(uuid())
   type      String
   notes     String?
+  clientId  String
   userId    String
-  clientId  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
+  client Client @relation(fields: [clientId], references: [id])
   user   User   @relation(fields: [userId], references: [id])
-  client Client? @relation(fields: [clientId], references: [id])
 }
 
 model Task {
-  id             String   @id @default(uuid())
-  title          String
-  description    String?
-  status         String   @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED
-  dueDate        DateTime?
-  reminderSent   Boolean  @default(false)
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  clientId    String?
+  dueDate     DateTime?
+  status      String   @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED
+  reminderSent Boolean  @default(false)
   overdueNotified Boolean @default(false)
-  userId         String
-  clientId       String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  userId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relations
-  user   User   @relation(fields: [userId], references: [id])
   client Client? @relation(fields: [clientId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model ClientSegment {
@@ -111,26 +111,12 @@ model Document {
   size        Int
   path        String
   description String?
+  clientId    String
   userId      String
-  clientId    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relations
+  client Client @relation(fields: [clientId], references: [id])
   user   User   @relation(fields: [userId], references: [id])
-  client Client? @relation(fields: [clientId], references: [id])
-}
-
-model Notification {
-  id        String   @id @default(uuid())
-  title     String
-  message   String
-  type      String   @default("INFO") // INFO, WARNING, ERROR, SUCCESS
-  isRead    Boolean  @default(false)
-  userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  user User @relation(fields: [userId], references: [id])
 }
