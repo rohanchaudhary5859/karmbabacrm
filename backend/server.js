@@ -1,23 +1,23 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import { PrismaClient } from "@prisma/client";
+const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+
+// Load environment variables
+dotenv.config();
 
 // Import routes
-import authRoutes from './src/routes/auth.js';
-import clientRoutes from './src/routes/client.js';
-import interactionRoutes from './src/routes/interaction.js';
-import taskRoutes from './src/routes/task.js';
-import clientSegmentRoutes from './src/routes/clientSegment.js';
-import reportRoutes from './src/routes/report.js';
-import emailRoutes from './src/routes/email.js';
-import documentRoutes from './src/routes/document.js';
-import searchRoutes from './src/routes/search.js';
+const authRoutes = require('./src/routes/auth');
+const clientRoutes = require('./src/routes/client');
+const interactionRoutes = require('./src/routes/interaction');
+const taskRoutes = require('./src/routes/task');
+const clientSegmentRoutes = require('./src/routes/clientSegment');
+const reportRoutes = require('./src/routes/report');
+const emailRoutes = require('./src/routes/email');
+const documentRoutes = require('./src/routes/document');
+const searchRoutes = require('./src/routes/search');
 
 // Import jobs
-import "./src/jobs/index.js";
-
-dotenv.config();
+require('./src/jobs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,24 +27,24 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
 // Test route
-app.get("/", (req, res) => {
-  res.json({ message: "Karm Baba CRM API" });
+app.get('/', (req, res) => {
+  res.json({ message: 'Karm Baba CRM API' });
 });
 
 // API routes
-app.use("/api/auth", authRoutes);
-app.use("/api/clients", clientRoutes);
-app.use("/api/interactions", interactionRoutes);
-app.use("/api/tasks", taskRoutes);
-app.use("/api/segments", clientSegmentRoutes);
-app.use("/api/reports", reportRoutes);
-app.use("/api/email", emailRoutes);
-app.use("/api/documents", documentRoutes);
-app.use("/api/search", searchRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/clients', clientRoutes);
+app.use('/api/interactions', interactionRoutes);
+app.use('/api/tasks', taskRoutes);
+app.use('/api/segments', clientSegmentRoutes);
+app.use('/api/reports', reportRoutes);
+app.use('/api/email', emailRoutes);
+app.use('/api/documents', documentRoutes);
+app.use('/api/search', searchRoutes);
 
 // Health check
-app.get("/api/health", (req, res) => {
-  res.json({ status: "OK", timestamp: new Date().toISOString() });
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
 app.listen(PORT, () => {

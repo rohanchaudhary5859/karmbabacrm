@@ -7,16 +7,18 @@ export default function Login() {
     email: '',
     password: ''
   });
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
   const navigate = useNavigate();
-
+  
   const { email, password } = formData;
-
+  
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
+  
   const submit = async (e) => {
     e.preventDefault();
     
@@ -35,7 +37,11 @@ export default function Login() {
     setError('');
     
     try {
-      const res = await axios.post('/api/auth/login', { email, password });
+      const res = await axios.post('/api/auth/login', {
+        email,
+        password
+      });
+      
       localStorage.setItem('token', res.data.token);
       navigate('/dashboard');
     } catch (err) {
@@ -44,7 +50,7 @@ export default function Login() {
       setLoading(false);
     }
   };
-
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
@@ -90,8 +96,8 @@ export default function Login() {
             />
           </div>
           
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="w-full bg-blue-600 text-white py-3 rounded font-medium hover:bg-blue-700 transition disabled:opacity-50"
             disabled={loading}
           >
