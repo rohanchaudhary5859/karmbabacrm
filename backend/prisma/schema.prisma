@@ -16,10 +16,12 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  clients      Client[]
-  interactions Interaction[]
-  tasks        Task[]
-  segments     ClientSegment[]
+  clients        Client[]
+  interactions   Interaction[]
+  tasks          Task[]
+  segments       ClientSegment[]
+  notifications  Notification[]
+  calendarTokens CalendarToken[]
 }
 
 model Client {
@@ -78,4 +80,28 @@ model ClientSegment {
 
   user    User     @relation(fields: [userId], references: [id])
   clients Client[]
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  title     String
+  message   String
+  type      String   @default("INFO") // INFO, WARNING, ERROR, SUCCESS
+  isRead    Boolean  @default(false)
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model CalendarToken {
+  id        String   @id @default(uuid())
+  accessToken String
+  refreshToken String?
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
 }

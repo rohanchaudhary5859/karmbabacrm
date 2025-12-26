@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { format, isPast, isToday } from 'date-fns';
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
@@ -61,6 +62,38 @@ export default function Tasks() {
   const pendingTasks = tasks.filter(t => t.status === 'PENDING');
   const inProgressTasks = tasks.filter(t => t.status === 'IN_PROGRESS');
   const completedTasks = tasks.filter(t => t.status === 'COMPLETED');
+
+  const getTaskPriority = (task) => {
+    if (task.status === 'COMPLETED') return 'normal';
+    if (!task.dueDate) return 'normal';
+    
+    const dueDate = new Date(task.dueDate);
+    if (isPast(dueDate) && !isToday(dueDate)) return 'overdue';
+    if (isToday(dueDate)) return 'today';
+    return 'normal';
+  };
+
+  const getPriorityClass = (priority) => {
+    switch (priority) {
+      case 'overdue':
+        return 'bg-red-50 border-red-200';
+      case 'today':
+        return 'bg-yellow-50 border-yellow-200';
+      default:
+        return 'bg-white';
+    }
+  };
+
+  const getPriorityText = (priority) => {
+    switch (priority) {
+      case 'overdue':
+        return 'Overdue';
+      case 'today':
+        return 'Due Today';
+      default:
+        return '';
+    }
+  };
 
   if (loading) {
     return (
@@ -155,55 +188,73 @@ export default function Tasks() {
                 <th className="p-2 text-left">Task</th>
                 <th className="p-2 text-left">Client</th>
                 <th className="p-2 text-left">Due Date</th>
+                <th className="p-2 text-left">Priority</th>
                 <th className="p-2 text-left">Status</th>
                 <th className="p-2 text-left">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredTasks.map(task => (
-                <tr key={task.id} className="border-b hover:bg-gray-50">
-                  <td className="p-2">
-                    <div className="font-medium">{task.title}</div>
-                    <div className="text-sm text-gray-500">{task.description}</div>
-                  </td>
-                  <td className="p-2">
-                    <Link 
-                      to={`/clients/${task.clientId}`} 
-                      className="text-blue-600 hover:underline"
-                    >
-                      {getClientName(task.clientId)}
-                    </Link>
-                  </td>
-                  <td className="p-2">
-                    {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : '-'}
-                  </td>
-                  <td className="p-2">
-                    <select
-                      value={task.status}
-                      onChange={(e) => updateTaskStatus(task.id, e.target.value)}
-                      className={`px-2 py-1 rounded text-sm ${
-                        task.status === 'PENDING' 
-                          ? 'bg-red-100 text-red-800' 
-                          : task.status === 'IN_PROGRESS' 
-                            ? 'bg-yellow-100 text-yellow-800' 
-                            : 'bg-green-100 text-green-800'
-                      }`}
-                    >
-                      <option value="PENDING">Pending</option>
-                      <option value="IN_PROGRESS">In Progress</option>
-                      <option value="COMPLETED">Completed</option>
-                    </select>
-                  </td>
-                  <td className="p-2">
-                    <Link 
-                      to={`/tasks/${task.id}/edit`} 
-                      className="text-blue-600 hover:underline"
-                    >
-                      Edit
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+              {filteredTasks.map(task => {
+                const priority = getTaskPriority(task);
+                return (
+                  <tr 
+                    key={task.id} 
+                    className={`border-b hover:bg-gray-50 ${getPriorityClass(priority)}`}
+                  >
+                    <td className="p-2">
+                      <div className="font-medium">{task.title}</div>
+                      <div className="text-sm text-gray-500">{task.description}</div>
+                    </td>
+                    <td className="p-2">
+                      <Link 
+                        to={`/clients/${task.clientId}`} 
+                        className="text-blue-600 hover:underline"
+                      >
+                        {task.clientId ? getClientName(task.clientId) : '-'}
+                      </Link>
+                    </td>
+                    <td className="p-2">
+                      {task.dueDate ? format(new Date(task.dueDate), 'MMM d, yyyy h:mm a') : '-'}
+                    </td>
+                    <td className="p-2">
+                      {getPriorityText(priority) && (
+                        <span className={`px-2 py-1 rounded text-xs ${
+                          priority === 'overdue' 
+                            ? 'bg-red-100 text-red-800' 
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {getPriorityText(priority)}
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-2">
+                      <select
+                        value={task.status}
+                        onChange={(e) => updateTaskStatus(task.id, e.target.value)}
+                        className={`px-2 py-1 rounded text-sm ${
+                          task.status === 'PENDING' 
+                            ? 'bg-red-100 text-red-800' 
+                            : task.status === 'IN_PROGRESS' 
+                              ? 'bg-yellow-100 text-yellow-800' 
+                              : 'bg-green-100 text-green-800'
+                        }`}
+                      >
+                        <option value="PENDING">Pending</option>
+                        <option value="IN_PROGRESS">In Progress</option>
+                        <option value="COMPLETED">Completed</option>
+                      </select>
+                    </td>
+                    <td className="p-2">
+                      <Link 
+                        to={`/tasks/${task.id}/edit`} 
+                        className="text-blue-600 hover:underline"
+                      >
+                        Edit
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         ) : (

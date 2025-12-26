@@ -10,7 +10,9 @@ export default function AddTask() {
     description: '',
     clientId: '',
     dueDate: '',
-    status: 'PENDING'
+    dueTime: '09:00',
+    status: 'PENDING',
+    addToCalendar: false
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -30,10 +32,14 @@ export default function AddTask() {
     }
   };
 
-  const { title, description, clientId, dueDate, status } = formData;
+  const { title, description, clientId, dueDate, dueTime, status, addToCalendar } = formData;
 
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const onCheckboxChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.checked });
   };
 
   const onSubmit = async (e) => {
@@ -42,9 +48,35 @@ export default function AddTask() {
     setError('');
     
     try {
-      await axios.post('/api/tasks', formData, {
+      // Create task first
+      const taskData = {
+        title,
+        description,
+        clientId: clientId || undefined,
+        dueDate: dueDate ? `${dueDate}T${dueTime}:00.000Z` : undefined,
+        status
+      };
+      
+      const taskRes = await axios.post('/api/tasks', taskData, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
+      
+      // If user wants to add to calendar and has calendar integration
+      if (addToCalendar && dueDate) {
+        try {
+          // In a real app, this would integrate with Google Calendar
+          console.log('Would add to calendar:', {
+            title,
+            description,
+            dueDate,
+            dueTime
+          });
+        } catch (calendarErr) {
+          console.error('Calendar integration error:', calendarErr);
+          // Don't fail the task creation if calendar fails
+        }
+      }
+      
       navigate('/tasks');
     } catch (err) {
       setError(err.response?.data?.message || 'Error creating task');
@@ -129,19 +161,45 @@ export default function AddTask() {
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Status
+                Due Time
               </label>
-              <select
-                name="status"
-                value={status}
+              <input
+                type="time"
+                name="dueTime"
+                value={dueTime}
                 onChange={onChange}
                 className="w-full p-2 border rounded"
-              >
-                <option value="PENDING">Pending</option>
-                <option value="IN_PROGRESS">In Progress</option>
-                <option value="COMPLETED">Completed</option>
-              </select>
+              />
             </div>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Status
+            </label>
+            <select
+              name="status"
+              value={status}
+              onChange={onChange}
+              className="w-full p-2 border rounded"
+            >
+              <option value="PENDING">Pending</option>
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="COMPLETED">Completed</option>
+            </select>
+          </div>
+          
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              name="addToCalendar"
+              checked={addToCalendar}
+              onChange={onCheckboxChange}
+              className="h-4 w-4 text-blue-600"
+            />
+            <label className="ml-2 block text-sm text-gray-700">
+              Add to Calendar
+            </label>
           </div>
           
           <div className="flex space-x-3 pt-4">
