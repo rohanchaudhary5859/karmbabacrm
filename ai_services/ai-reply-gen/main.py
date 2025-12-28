@@ -36,5 +36,5 @@ def generate(payload: ReplyPayload):
     product = payload.product or 'the product'
     text = tpl.format(product=product)
     if len(payload.buyer_message) > 0:
-        text += " (Ref: "{}")".format(payload.buyer_message[:80])
+        text += ' (Ref: "{}")'.format(payload.buyer_message[:80])
     return {'reply': text}
