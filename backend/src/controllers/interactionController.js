@@ -2,6 +2,9 @@ const Interaction = require('../models/Interaction');
 
 exports.createInteraction = async (req, res) => {
   try {
+    const { type, clientId } = req.body;
+    if (!type || !clientId) return res.status(400).json({ success: false, message: 'Interaction type and clientId are required' });
+
     const interaction = await Interaction.create(req.body, req.user.id);
     res.status(201).json({
       success: true,
@@ -70,6 +73,7 @@ exports.getClientInteractions = async (req, res) => {
 
 exports.updateInteraction = async (req, res) => {
   try {
+    if (req.body.type === '') return res.status(400).json({ success: false, message: 'Interaction type cannot be empty' });
     const interaction = await Interaction.update(req.params.id, req.body, req.user.id);
     
     if (!interaction) {

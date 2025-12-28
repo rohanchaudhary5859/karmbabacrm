@@ -45,7 +45,7 @@ class Interaction {
   }
   
   static async findById(id, userId) {
-    return await prisma.interaction.findUnique({
+    return await prisma.interaction.findFirst({
       where: {
         id,
         userId
@@ -57,25 +57,15 @@ class Interaction {
   }
   
   static async update(id, interactionData, userId) {
-    return await prisma.interaction.update({
-      where: {
-        id,
-        userId
-      },
-      data: interactionData,
-      include: {
-        client: true
-      }
-    });
+    const existing = await prisma.interaction.findFirst({ where: { id, userId } });
+    if (!existing) return null;
+    return await prisma.interaction.update({ where: { id }, data: interactionData, include: { client: true } });
   }
   
   static async delete(id, userId) {
-    return await prisma.interaction.delete({
-      where: {
-        id,
-        userId
-      }
-    });
+    const existing = await prisma.interaction.findFirst({ where: { id, userId } });
+    if (!existing) return null;
+    return await prisma.interaction.delete({ where: { id } });
   }
 }
 

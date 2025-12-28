@@ -11,6 +11,7 @@ import reportRoutes from './report.js';
 import emailRoutes from './email.js';
 import documentRoutes from './document.js';
 import searchRoutes from './search.js';
+import aiRoutes from './ai.js';
 
 // Register routes
 router.use('/auth', authRoutes);
@@ -22,6 +23,7 @@ router.use('/reports', reportRoutes);
 router.use('/email', emailRoutes);
 router.use('/documents', documentRoutes);
 router.use('/search', searchRoutes);
+router.use('/ai', aiRoutes);
 
 router.get("/test", (req, res) => {
   res.json({ message: "API Route Working ✔" });

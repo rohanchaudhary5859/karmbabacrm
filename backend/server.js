@@ -15,12 +15,14 @@ const reportRoutes = require('./src/routes/report');
 const emailRoutes = require('./src/routes/email');
 const documentRoutes = require('./src/routes/document');
 const searchRoutes = require('./src/routes/search');
+const socialRoutes = require('./src/routes/social');
+const whatsappRoutes = require('./src/routes/whatsapp');
 
 // Import jobs
 require('./src/jobs');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
@@ -41,6 +43,8 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/search', searchRoutes);
+app.use('/api/social', socialRoutes);
+app.use('/api/whatsapp', whatsappRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

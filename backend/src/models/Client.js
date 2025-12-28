@@ -24,7 +24,7 @@ class Client {
   }
   
   static async findById(id, userId) {
-    return await prisma.client.findUnique({
+    return await prisma.client.findFirst({
       where: {
         id,
         userId
@@ -33,22 +33,15 @@ class Client {
   }
   
   static async update(id, clientData, userId) {
-    return await prisma.client.update({
-      where: {
-        id,
-        userId
-      },
-      data: clientData
-    });
+    const existing = await prisma.client.findFirst({ where: { id, userId } });
+    if (!existing) return null;
+    return await prisma.client.update({ where: { id }, data: clientData });
   }
   
   static async delete(id, userId) {
-    return await prisma.client.delete({
-      where: {
-        id,
-        userId
-      }
-    });
+    const existing = await prisma.client.findFirst({ where: { id, userId } });
+    if (!existing) return null;
+    return await prisma.client.delete({ where: { id } });
   }
   
   static async search(query, userId) {

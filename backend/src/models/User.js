@@ -97,6 +97,25 @@ class User {
       where: { id }
     });
   }
+
+  static async findByEmail(email) {
+    return await prisma.user.findUnique({ where: { email } });
+  }
+
+  static async setResetToken(userId, token, expires) {
+    return await prisma.user.update({ where: { id: userId }, data: { passwordResetToken: token, passwordResetExpires: expires } });
+  }
+
+  static async findByResetToken(token) {
+    return await prisma.user.findFirst({ where: { passwordResetToken: token } });
+  }
+
+  static async updatePassword(userId, newPassword) {
+    const bcrypt = require('bcryptjs');
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    return await prisma.user.update({ where: { id: userId }, data: { password: hashedPassword, passwordResetToken: null, passwordResetExpires: null } });
+  }
 }
 
 module.exports = User;

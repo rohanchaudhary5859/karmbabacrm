@@ -2,6 +2,9 @@ const Task = require('../models/Task');
 
 exports.createTask = async (req, res) => {
   try {
+    const { title } = req.body;
+    if (!title) return res.status(400).json({ success: false, message: 'Task title is required' });
+
     const task = await Task.create(req.body, req.user.id);
     res.status(201).json({
       success: true,
@@ -63,6 +66,7 @@ exports.getTask = async (req, res) => {
 
 exports.updateTask = async (req, res) => {
   try {
+    if (req.body.title === '') return res.status(400).json({ success: false, message: 'Task title cannot be empty' });
     const task = await Task.update(req.params.id, req.body, req.user.id);
     
     if (!task) {

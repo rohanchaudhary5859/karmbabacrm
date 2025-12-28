@@ -2,6 +2,9 @@ const Client = require('../models/Client');
 
 exports.createClient = async (req, res) => {
   try {
+    const { name, email } = req.body;
+    if (!name) return res.status(400).json({ success: false, message: 'Client name is required' });
+
     const client = await Client.create(req.body, req.user.id);
     res.status(201).json({
       success: true,
@@ -55,6 +58,7 @@ exports.getClient = async (req, res) => {
 
 exports.updateClient = async (req, res) => {
   try {
+    if (req.body.name === '') return res.status(400).json({ success: false, message: 'Client name cannot be empty' });
     const client = await Client.update(req.params.id, req.body, req.user.id);
     
     if (!client) {

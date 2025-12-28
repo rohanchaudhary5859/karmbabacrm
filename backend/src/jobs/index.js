@@ -1,14 +1,7 @@
-const cron = require('node-cron');
-const sendTaskReminders = require('./taskReminderJob');
+// The individual job modules handle their own scheduling.
+// Require the task reminder jobs so they initialize themselves.
+const taskReminderJobs = require('./taskReminderJob');
 
-// Schedule task reminders to run daily at 9 AM
-cron.schedule('0 9 * * *', sendTaskReminders, {
-  scheduled: true,
-  timezone: "Asia/Kolkata"
-});
+console.log('Job scheduler initialized');
 
-console.log('Job scheduler started');
-
-module.exports = {
-  sendTaskReminders
-};
+module.exports = taskReminderJobs;
