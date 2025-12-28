@@ -35,11 +35,15 @@ import Templates from './pages/templates/Templates';
 
 // Report pages
 import Reports from './pages/reports/Reports';
+// Integrations
+import SocialConnect from './pages/integrations/SocialConnect';
 
 function App() {
   return (
     <AuthProvider>
       <Routes>
+        {/* Redirect root to login */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
         {/* Public routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -77,6 +81,7 @@ function App() {
           
           {/* Report routes */}
           <Route path="/reports" element={<Reports />} />
+          <Route path="/integrations" element={<SocialConnect />} />
         </Route>
       </Routes>
     </AuthProvider>

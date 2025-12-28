@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -18,6 +18,7 @@ function NavLink({ to, children, exact = false }) {
 export default function Layout({ children }){
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -26,7 +27,7 @@ export default function Layout({ children }){
 
   return (
     <div className="min-h-screen flex">
-      <aside className="w-64 bg-white border-r p-4 hidden md:block">
+      <aside className={`w-64 bg-white border-r p-4 md:block ${mobileOpen ? 'block' : 'hidden'}`}>
         <div className="text-xl font-bold mb-6">Karm Baba CRM</div>
         <nav className="space-y-1">
           <NavLink to="/dashboard">Dashboard</NavLink>
@@ -42,7 +43,7 @@ export default function Layout({ children }){
       <div className="flex-1">
         <header className="bg-white shadow-sm p-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button className="md:hidden p-2 rounded bg-gray-100">☰</button>
+            <button onClick={() => setMobileOpen(v => !v)} className="md:hidden p-2 rounded bg-gray-100">☰</button>
             <div className="font-semibold text-lg">Dashboard</div>
           </div>
           

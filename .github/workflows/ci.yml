@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: file:./backend/dev.db
+      JWT_SECRET: ci_secret
+      PORT: 5000
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install backend deps
+        working-directory: backend
+        run: npm ci
+
+      - name: Generate Prisma client
+        working-directory: backend
+        run: npx prisma generate
+
+      - name: Apply Prisma migrations (if any)
+        working-directory: backend
+        run: npx prisma migrate deploy || true
+
+      - name: Seed demo data
+        working-directory: backend
+        run: node scripts/seed-demo.js
+
+      - name: Start backend
+        working-directory: backend
+        run: nohup node server.js > backend.log 2>&1 &
+
+      - name: Wait for backend
+        run: |
+          for i in 1 2 3 4 5; do
+            sleep 2
+            curl -sS http://localhost:5000/api/health && exit 0 || true
+          done
+          cat backend/backend.log || true
+          exit 1
+
+      - name: Install frontend deps and build
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Upload backend log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-log
+          path: backend/backend.log

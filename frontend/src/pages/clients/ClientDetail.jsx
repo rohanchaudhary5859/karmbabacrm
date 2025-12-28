@@ -93,6 +93,49 @@ export default function ClientDetail() {
           >
             Delete
           </button>
+          <button
+            onClick={async () => {
+              try {
+                // call AI lead score proxy
+                const payload = {
+                  monthly_qty: client.monthlyQty || 0,
+                  price_fit: client.priceFit || 0,
+                  certifications: client.certifications || 0,
+                  urgency_days: client.urgencyDays || 30
+                };
+                const resp = await axios.post('/api/ai/lead-score', payload, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+                if (resp.data && resp.data.ok) {
+                  const { score, recommendation } = resp.data.data;
+                  alert(`Lead Score: ${score}\nRecommendation: ${recommendation}`);
+                } else {
+                  alert('AI scoring unavailable');
+                }
+              } catch (err) {
+                console.error(err);
+                alert('Error scoring lead');
+              }
+            }}
+            className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+          >
+            Score Lead
+          </button>
+          <button
+            onClick={async () => {
+              if (!client.phone) { alert('Client has no phone number'); return; }
+              try {
+                const message = `Hi ${client.name}, we have an update for you. Reply to connect.`;
+                const r = await axios.post('/api/whatsapp/send', { to: client.phone, message }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+                if (r.data && r.data.success) alert('WhatsApp message queued');
+                else alert('WhatsApp send failed');
+              } catch (err) {
+                console.error(err);
+                alert('Error sending WhatsApp');
+              }
+            }}
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          >
+            Send WhatsApp
+          </button>
         </div>
       </div>
       

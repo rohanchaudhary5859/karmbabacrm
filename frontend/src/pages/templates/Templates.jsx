@@ -154,7 +154,7 @@ export default function Templates() {
                 className="w-full p-2 border rounded font-mono text-sm"
               ></textarea>
               <div className="text-sm text-gray-500 mt-1">
-                Available placeholders: {{client.name}}, {{client.company}}
+                Available placeholders: {'{{client.name}}'}, {'{{client.company}}'}
               </div>
             </div>
             

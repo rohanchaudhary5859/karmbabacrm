@@ -26,12 +26,7 @@ export const AuthProvider = ({ children }) => {
   
   const loadUser = async () => {
     try {
-      const res = await axios.get('/api/auth/me', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      
+      const res = await axios.get('/api/auth/me');
       setUser(res.data.user);
       setIsAuthenticated(true);
     } catch (err) {
@@ -47,8 +42,9 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const res = await axios.post('/api/auth/login', { email, password });
-      
       localStorage.setItem('token', res.data.token);
+      // set axios default header for subsequent requests
+      axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
       setUser(res.data.user);
       setIsAuthenticated(true);
       
@@ -67,6 +63,7 @@ export const AuthProvider = ({ children }) => {
   
   const logout = () => {
     localStorage.removeItem('token');
+    delete axios.defaults.headers.common['Authorization'];
     setUser(null);
     setIsAuthenticated(false);
     navigate('/login');
@@ -75,8 +72,8 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const res = await axios.post('/api/auth/register', userData);
-      
       localStorage.setItem('token', res.data.token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
       setUser(res.data.user);
       setIsAuthenticated(true);
       
