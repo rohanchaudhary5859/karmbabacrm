@@ -8,13 +8,14 @@ const {
   searchClients
 } = require('../controllers/clientController');
 const { auth } = require('../middleware/auth');
+const { validate, schemas } = require('../middleware/validation');
 
 const router = express.Router();
 
 router.use(auth);
 
 router.route('/')
-  .post(createClient)
+  .post(validate(schemas.client), createClient)
   .get(getClients);
 
 router.route('/search')
@@ -22,7 +23,7 @@ router.route('/search')
 
 router.route('/:id')
   .get(getClient)
-  .put(updateClient)
+  .put(validate(schemas.client), updateClient)
   .delete(deleteClient);
 
 module.exports = router;

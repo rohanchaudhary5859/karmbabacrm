@@ -1,53 +1,146 @@
 # KARM BABA CRM
 
-A comprehensive CRM system for managing clients, interactions, tasks, and more.
+A comprehensive, production-ready CRM system for managing clients, interactions, tasks, and more.
 
-## Setup Instructions
+## Features
 
-### Backend Setup
+- **User Authentication & Authorization**: JWT-based auth with role-based access control
+- **Client Management**: Full CRUD operations for client data
+- **Task Management**: Create, assign, and track tasks with due dates
+- **Interaction Tracking**: Log all client interactions
+- **AI Lead Scoring**: Machine learning-powered lead prioritization
+- **Email Integration**: Send templated emails
+- **Document Management**: Upload and manage client documents
+- **Reporting**: Generate insights and analytics
+- **WhatsApp Integration**: Send messages via Twilio
+- **Social Media Integration**: LinkedIn and Facebook OAuth
+- **Multi-tenant Support**: Role-based access for teams
 
-1. Navigate to the backend directory:
+## Security Features
+
+- Helmet.js for security headers
+- Rate limiting (100 requests/15min per IP)
+- Input validation with Joi
+- CORS protection
+- JWT authentication
+- Password hashing with bcrypt
+- SQL injection protection via Prisma ORM
+
+## Technology Stack
+
+- **Frontend**: React 18, Vite, Tailwind CSS, React Router
+- **Backend**: Node.js 18, Express.js, Prisma ORM
+- **Database**: SQLite (dev) / PostgreSQL (prod)
+- **AI Services**: Python 3.10, FastAPI, scikit-learn
+- **Deployment**: Docker, Docker Compose
+- **Testing**: Jest, Supertest
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 18+
+- Docker & Docker Compose (recommended)
+- Git
+
+### Local Development
+
+1. Clone the repository
+2. Copy environment files:
    ```bash
-   cd backend
+   cp backend/.env.example backend/.env
+   cp frontend/.env.example frontend/.env
    ```
-
-2. Install dependencies:
+3. Start with Docker Compose:
    ```bash
-   npm install
+   docker-compose up --build
    ```
+4. Access the application:
+   - Frontend: http://localhost:4173
+   - Backend API: http://localhost:5000
+   - AI Services: http://localhost:8001
 
-3. Set up the database:
-   ```bash
-   npx prisma generate
-   npx prisma migrate dev --name init
-   ```
+### Manual Setup
 
-4. Initialize the database with default data:
-   ```bash
-   npm run db:init
-   ```
+See individual service READMEs for manual installation.
 
-5. Start the backend server:
-   ```bash
-   npm run dev
-   ```
+## Environment Variables
 
-### Frontend Setup
+### Backend (.env)
 
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
+```env
+PORT=5000
+JWT_SECRET=your_secure_jwt_secret
+DATABASE_URL="file:./dev.db"
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_app_password
+TWILIO_ACCOUNT_SID=your_sid
+TWILIO_AUTH_TOKEN=your_token
+TWILIO_FROM=+1234567890
+```
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+### Frontend (.env)
 
-3. Start the frontend development server:
-   ```bash
-   npm run dev
-   ```
+```env
+VITE_API_BASE_URL=http://localhost:5000/api
+VITE_APP_NAME=Karm Baba CRM
+```
+
+## API Documentation
+
+### Authentication
+
+All API endpoints except `/api/health` and `/api/auth/*` require authentication.
+
+Include the JWT token in the Authorization header:
+```
+Authorization: Bearer <your_jwt_token>
+```
+
+### Key Endpoints
+
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login user
+- `GET /api/clients` - Get all clients
+- `POST /api/clients` - Create client
+- `GET /api/tasks` - Get tasks
+- `POST /api/ai/lead-score` - Score lead with AI
+
+## Testing
+
+```bash
+cd backend
+npm test
+```
+
+## Deployment
+
+### Docker Production
+
+```bash
+docker-compose -f docker-compose.prod.yml up --build
+```
+
+### Environment Setup
+
+1. Set `NODE_ENV=production`
+2. Use PostgreSQL for database
+3. Configure proper JWT secret
+4. Set up email service
+5. Configure Twilio for WhatsApp
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Run tests before committing
+4. Submit a pull request
+
+## License
+
+MIT License
 
 ## Default Admin User
 
