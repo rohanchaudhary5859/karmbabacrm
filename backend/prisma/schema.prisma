@@ -8,28 +8,26 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
+  id                String     @id @default(uuid())
+  name              String
+  email             String     @unique
+  password          String
+  role              String     @default("USER")
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  clients           Client[]
+  interactions      Interaction[]
+  tasks             Task[]
+  documents         Document[]
+  emailTemplates    EmailTemplate[]
+  clientSegments    ClientSegment[]
+  notifications     Notification[]
   passwordResetToken String?
   passwordResetExpires DateTime?
-  role      String   @default("USER")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  clients      Client[]
-  interactions Interaction[]
-  tasks        Task[]
-  segments     ClientSegment[]
-  documents    Document[]
-  templates    EmailTemplate[]
-  socialAccounts SocialAccount[]
 }
 
 model Client {
-  id          String   @id @default(uuid())
+  id          String     @id @default(uuid())
   name        String
   email       String?
   phone       String?
@@ -37,73 +35,41 @@ model Client {
   address     String?
   website     String?
   userId      String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  user        User      @relation(fields: [userId], references: [id])
+  user        User       @relation(fields: [userId], references: [id])
   interactions Interaction[]
   tasks       Task[]
-  segments    ClientSegment[]
   documents   Document[]
+  segments    ClientSegment[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 model Interaction {
   id        String   @id @default(uuid())
   type      String
   notes     String?
-  clientId  String
   userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  clientId  String?
+  client    Client?  @relation(fields: [clientId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  // Relations
-  client Client @relation(fields: [clientId], references: [id])
-  user   User   @relation(fields: [userId], references: [id])
 }
 
 model Task {
-  id          String   @id @default(uuid())
-  title       String
-  description String?
-  clientId    String?
-  dueDate     DateTime?
-  status      String   @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED
-  reminderSent Boolean  @default(false)
-  overdueNotified Boolean @default(false)
-  userId      String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  client Client? @relation(fields: [clientId], references: [id])
-  user   User   @relation(fields: [userId], references: [id])
-}
-
-model ClientSegment {
-  id        String   @id @default(uuid())
-  name      String
-  description String?
-  userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  user    User     @relation(fields: [userId], references: [id])
-  clients Client[]
-}
-
-model EmailTemplate {
-  id        String   @id @default(uuid())
-  name      String
-  subject   String
-  body      String
-  userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  user User @relation(fields: [userId], references: [id])
+  id              String   @id @default(uuid())
+  title           String
+  description     String?
+  dueDate         DateTime?
+  status          String   @default("PENDING")
+  reminderSent    Boolean  @default(false)
+  overdueNotified Boolean  @default(false)
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  clientId        String?
+  client          Client?  @relation(fields: [clientId], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model Document {
@@ -114,25 +80,56 @@ model Document {
   size        Int
   path        String
   description String?
-  clientId    String
   userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  clientId    String?
+  client      Client?  @relation(fields: [clientId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
 
-  // Relations
-  client Client @relation(fields: [clientId], references: [id])
-  user   User   @relation(fields: [userId], references: [id])
+model EmailTemplate {
+  id        String   @id @default(uuid())
+  name      String
+  subject   String
+  body      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ClientSegment {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  clients     Client[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  title     String
+  message   String
+  type      String   @default("INFO")
+  isRead    Boolean  @default(false)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model SocialAccount {
   id           String   @id @default(uuid())
   provider     String
-  providerId   String?
+  providerId   String
   accessToken  String
   refreshToken String?
   userId       String
+  user         User     @relation(fields: [userId], references: [id])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id])
 }

@@ -12,8 +12,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </BrowserRouter>
   </React.StrictMode>
 );
+
 // Configure axios base URL for API calls (use Vite env or fallback to localhost)
-axios.defaults.baseURL = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
 // If a token exists, set default Authorization header
 const existingToken = localStorage.getItem('token');
 if (existingToken) {

@@ -1,24 +1,25 @@
 const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcryptjs');
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('Initializing database...');
-
+  
   // Create a default admin user for testing (hashed password)
-  const bcrypt = require('bcryptjs');
-  const hashed = await bcrypt.hash('admin123', 10);
-  await prisma.user.upsert({
+  const hashedPassword = await bcrypt.hash('admin123', 10);
+  
+  const adminUser = await prisma.user.upsert({
     where: { email: 'admin@example.com' },
     update: {},
     create: {
       name: 'Admin User',
       email: 'admin@example.com',
-      password: hashed,
+      password: hashedPassword,
       role: 'ADMIN'
     }
   });
-
+  
   console.log('Database initialized successfully');
   console.log('Default admin user created:');
   console.log('Email: admin@example.com');
